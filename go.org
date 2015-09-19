@@ -1,0 +1,11 @@
+* use https://github.com/dchest/varuint
+* new object creation via Go structs, avoid setter noise
+* mutation via overlay
+- go WriteTo & Bytes
+- setters & bit flags what's set
+* mutation via Go struct & don't change zero fields?
+* custom types via constructors that take *[n]byte or []byte
+- MarshalBinary or such to go other way around
+* dynamic fields can be cached or not
+* code generation based on a language-specific, project-specific, config file
+- can e.g. choose what dynamic fields are cached

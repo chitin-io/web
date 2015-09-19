@@ -1,0 +1,76 @@
+* repurpose field length chunking for sequential Frames and Envelopes too :spec:v1:
+- safe 0 padding means this is opt-in
+- can we explain sequence of frames as a message with no slots
+- CANNOT interpret envelope as a message with two fields: uintX and
+  []byte; that would include the length of the inner message
+* [#A] more semantic types					    :spec:v1:
+- Can we piggyback on JSON-LD/JSON Schema IRIs to write down semantics
+  of fields? http://www.w3.org/TR/json-ld/#the-context
+** unix timestamp, tai64na
+** url
+- or IRI, https://en.wikipedia.org/wiki/Internationalized_resource_identifier)
+** scavenge msgpack, bson, postgres, mysql, sqlite etc for what types they've ended up defining
+* website: talk about rpc						:rpc:
+- specifically, layering as HTTP/2 POSTs, bidir assumption
+* sequential vs concurrent protocols
+- sequential: can switch protocols
+- concurrent: likely faster, goroutine started for each []byte
+- mention msgp's rpc lib
+* better split the spec into normative and non-normative?	       :spec:
+- push things like arrays of variable size items into a "conventions"
+  section
+* expandability without bumping version number 			       :spec:
+- can add slots to the end?
+- can add fields to the end?
+* clearer optional features for library implementations
+* [#B] website: write a boltdb example
+* [#B] chitin schema file formatter				      :tools:
+- be like gofmt
+- use tabs
+* [#C] denser field length encoding as option
+-  we could encode field lengths at <1byte per field
+- they're not sorted, so can't delta-compress, but could bit pack
+- fastpfor et al
+- https://github.com/surge/encoding
+- http://godoc.org/j4k.co/exp/varintrle
+- http://godoc.org/github.com/Yawning/ntru/bitpack
+- https://github.com/robskie/bit
+- https://github.com/robskie/fibvec
+  and https://en.wikipedia.org/wiki/Fibonacci_coding
+- https://github.com/crazy2be/birdie
+- https://github.com/Smerity/govarint
+** self-delimiting number sequences
+- goal: "Field lengths are densely encoded, typically at less than 1
+  byte per field."
+
+Elias δ-coding needs
+
+    math.floor(math.log(x, 2)) + 2 * math.floor(math.log(1 + math.floor(math.log(x, 2)), 2)) + 1
+
+bits to encode x
+
+https://en.wikipedia.org/wiki/Prefix_code
+https://en.wikipedia.org/wiki/Variable-length_code#Uniquely_decodable_codes
+
+- rice/golomb looks promising
+https://en.wikipedia.org/wiki/Golomb_coding
+https://github.com/dave-andersen/deltagolomb
+
+- varuint is hard to beat
+- exponential golomb is smaller for fields predominantly <30
+https://github.com/dave-andersen/deltagolomb
+https://en.wikipedia.org/wiki/Exponential-Golomb_coding
+
+- everything more complex than varuint is 10x slower
+- make benchmarks reproducible
+* write rationale: 0-length frames & 0-kind envelopes are *ignored*
+- never passed to application code
+- this makes concatenating multiple Framed streams safe
+* write rationale for where to put field sizes
+- protobuf can do "back to front" encoding to avoid pre-sizing
+  everything; not desirable when one wants to avoid copies
+- if at the end, reader can't stream
+* write advocacy: no wire overhead for putting a Message in a sized container
+- e.g. in a key-value database
+- that is, no field types etc
+- not counting field lengths as overhead, those are in every format

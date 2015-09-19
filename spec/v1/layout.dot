@@ -1,0 +1,4 @@
+digraph layout {
+  graph [bgcolor="#ffffff00"];
+  sample [shape=record, label="{frame|{length|{envelope|{type|{message|{{slots|{S1|S2}}|{fields|{L1,L2,L3|F1|F2|F3|L4|F4}}}}}}}}"];
+}

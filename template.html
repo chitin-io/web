@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{.Title}}</title>
+    <style>
+     body {
+       background-color: #ffffea;
+       display: flex;
+       justify-content: center;
+     }
+     body>div {
+       flex: 1;
+     }
+     nav.sidebar>ul {
+       display: block;
+       padding: 0;
+       margin: 0;
+       margin-top: 40px;
+       background-color: #f9cc9d;
+     }
+     nav.sidebar>ul>li {
+       display: block;
+       padding: 0;
+       margin: 0;
+     }
+     nav.sidebar>ul>li>a {
+       display: block;
+       text-decoration: none;
+       overflow-x: hidden;
+       border-top: 1px solid black;
+       padding: 0.2em;
+     }
+     nav.sidebar>ul>li>a>p {
+       font-size: 80%;
+       margin: 0.2em;
+     }
+     nav.sidebar>ul>li:first-child>a {
+       border-top: none;
+     }
+     nav.sidebar>ul>li>a:hover {
+       background-color: #fddd9b;
+     }
+    </style>
+  </head>
+  <body>
+
+    <div style="flex-shrink: 0; flex-basis: 80%; max-width: 30em; margin: 1em;">
+
+      <div style="position:relative"><div style="color:#d0d0d0; opacity:0.3; font-family:'Helvetica',sans-serif; font-size:300px; font-weight:700; position:absolute; top: 500px; left:-250px; -webkit-transform:rotate(-45deg); z-index:-1;">DRAFT</div></div>
+
+      {{.H1}}
+      {{.TOC}}
+
+      {{.Content}}
+    </div>
+
+    <div style="flex-grow: 1; flex-basis: 0; display: flex;">
+      <div style="flex: 1; order: 1; flex-grow: 0; flex-basis: 100px; display: flex;">
+	<nav class="sidebar" style="flex: 1;">
+	  <ul style="">
+	    <li style=""><a href="/">Introduction<p>and motivation</p></a></li>
+	    <li><a href="/spec/v1/">Specification<p>details about the wire format</p></a></li>
+	    <li><a href="/code/">Code<p>to actually get things done</p></a></li>
+	  </ul>
+	</nav>
+      </div>
+    </div>
+
+    <div style="order: -1; flex-basis: 0; flex-grow: 1;"></div>
+
+  </body>
+</html>

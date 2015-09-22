@@ -274,9 +274,17 @@ We use
 [SQLite's Variable-Length Integers](http://www.sqlite.org/src4/doc/trunk/www/varint.wiki),
 opting to call them `varuint` inspired by
 [github.com/dchest/varuint](https://github.com/dchest/varuint), to
-encode integers in to least possible number of bytes. `varuint` wins
-over Protocol Buffers' zigzag encoding for numbers in the 128-240
-range, which is very common for message field lengths.
+encode integers in to least possible number of bytes.
+
+`varuint` wins over Protocol Buffers' zigzag encoding for numbers in
+the 128-240 range, which is very common for message field lengths.
+
+`varuint` numbers sort properly in lexicographic order.
+
+`varuint` puts the length of the encoded data in the first byte, a
+property Protocol Buffers authors have said they would use, except for
+legacy reasons.
+
 
 ## Interleaved field length chunks and contents
 

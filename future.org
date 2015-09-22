@@ -20,7 +20,6 @@
 - push things like arrays of variable size items into a "conventions"
   section
 * expandability without bumping version number 			       :spec:
-- can add slots to the end?
 - can add fields to the end?
 * clearer optional features for library implementations
 * [#B] website: write a boltdb example

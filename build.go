@@ -246,6 +246,12 @@ func run() error {
 	if err := filepath.Walk(".", processFile); err != nil {
 		return err
 	}
+	if err := writeFile(filepath.Join(outputDir, ".nojekyll"), nil); err != nil {
+		return err
+	}
+	if err := writeFile(filepath.Join(outputDir, "CNAME"), []byte("chitin.io\n")); err != nil {
+		return err
+	}
 	return nil
 }
 

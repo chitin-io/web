@@ -40,6 +40,7 @@ const outputDir = "output"
 var builders = map[string]func(path string, info os.FileInfo) error{
 	".md":  markdown,
 	".dot": graphvizDot,
+	".svg": svg,
 }
 
 var layout = template.Must(template.ParseFiles("template.html"))
@@ -198,6 +199,24 @@ func graphvizDot(path string, info os.FileInfo) error {
 	}
 
 	dst := filepath.Join(outputDir, strings.TrimSuffix(path, ".dot")+".svg")
+	if err := writeFile(dst, min); err != nil {
+		return err
+	}
+	return nil
+}
+
+func svg(path string, info os.FileInfo) error {
+	input, err := ioutil.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	min, err := minify.Bytes(minifier, "image/svg+xml", input)
+	if err != nil {
+		return fmt.Errorf("cannot minify svg: %v", err)
+	}
+
+	dst := filepath.Join(outputDir, path)
 	if err := writeFile(dst, min); err != nil {
 		return err
 	}

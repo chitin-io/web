@@ -26,6 +26,10 @@ Chitin is language-independent, but at this time only a Go library
 exists. That library uses code generation to gain good performance.
 
 
+**Status:** the [spec](/spec/v1/) is starting to shape up, just about
+everything else is missing. Be patient, or join us to help out!
+https://github.com/chitin-io/web
+
 
 # Example of a schema
 

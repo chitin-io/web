@@ -44,7 +44,7 @@ and then encoded as [`varuint`](#varuint).
 ## Array types {#array-types}
 
 - `[n]T`: a fixed-size array of `n` items of type `T`
-- `[]T` for a variable-size array of items of type `T`
+- `[]T`: a variable-size array of items of type `T`
 
 Where `T` is any type that is valid in that context.
 

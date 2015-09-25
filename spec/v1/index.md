@@ -86,17 +86,19 @@ Encoded length is content length + 1.
 ## Alignment {#alignment}
 
 The content may have alignment requirements. In the simple case,
-alignment is implemented by adding 0 bytes before the length and
-content bytes:
+alignment is implemented by adding 0 bytes after the length.
 
 When decoding, the 0 lengths are skipped.
+
+> *Note*: this only works because the decoder also knows the alignment
+> requirements. Otherwise, the 0 bytes would be confused for content.
 
 > *Example*: an encoding of a variable-length message with contents
 > `foo`, where the content is aligned to a 4-byte boundary:
 >
 > offset | 0 | 1 | 2 | 3 | 4 | 5 | 6
 > -------|---|---|---|---|---|---|---
-> value  | 0 | 0 | 0 | 4 |"f"|"o"|"o"
+> value  | 4 | 0 | 0 | 0 |"f"|"o"|"o"
 
 The number of padding bytes depends on the encoded byte count of the
 `varuint` length.
@@ -107,16 +109,14 @@ The number of padding bytes depends on the encoded byte count of the
 >
 > offset | 0 | 1 | 2 | 3 | 4 | 5 | … | 1003
 > -------|---|---|---|---|---|---|---|-----
-> value  | 0 | 0 |243|249|"x"|"x"| … |"x"
-
-Padding SHOULD be inserted at the last possible location.
+> value  |243|249| 0 | 0 |"x"|"x"| … |"x"
 
 > *Example*: an encoding of two variable-length messages with contents
 > `x` and `foo`, where `foo` is aligned to a 4-byte boundary:
 >
 > offset | 0 | 1 | 2 | 3 | 4 | 5 | 6
 > -------|---|---|---|---|---|---|---
-> value  | 2 |"x"| 0 | 4 |"f"|"o"|"o"
+> value  | 2 |"x"| 4 | 0 |"f"|"o"|"o"
 
 With nested data structures, alignment may be required for a byte that
 is not the first byte of content.
@@ -126,7 +126,7 @@ is not the first byte of content.
 >
 > offset | 0 | 1 | 2 | 3 | 4 | 5 | 6
 > -------|---|---|---|---|---|---|---
-> value  | 0 | 0 | 5 |"x"|"A"|"b"|"c"
+> value  | 5 | 0 | 0 |"x"|"A"|"b"|"c"
 
 
 ## Interleaving fixed length items {#interleaving-fixed-length-items}

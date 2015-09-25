@@ -70,12 +70,21 @@
      h4:before {counter-increment: h4; content: counter(h1) "." counter(h2) "." counter(h3) "." counter(h4) ". "}
      h5:before {counter-increment: h5; content: counter(h1) "." counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) ". "}
      h6:before {counter-increment: h6; content: counter(h1) "." counter(h2) "." counter(h3) "." counter(h4) "." counter(h5) "." counter(h6) ". "}
+
+     #content nav ul {
+       counter-reset: toc;
+       list-style-type: none;
+     }
+     #content nav li::before {
+       counter-increment: toc;
+       content: counters(toc,".") ". ";
+     }
      {{end}}
     </style>
   </head>
   <body>
 
-    <div style="flex-shrink: 0; flex-basis: 80%; max-width: 30em; margin: 1em;">
+    <div id="content" style="flex-shrink: 0; flex-basis: 80%; max-width: 30em; margin: 1em;">
 
       <div style="position:relative"><div style="color:#d0d0d0; opacity:0.3; font-family:'Helvetica',sans-serif; font-size:300px; font-weight:700; position:absolute; top: 500px; left:-250px; -webkit-transform:rotate(-45deg); z-index:-1;">DRAFT</div></div>
 

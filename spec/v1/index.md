@@ -25,8 +25,36 @@ and then encoded as [`varuint`](#varuint).
 
 # Types {#types}
 
-**TODO move uint8 etc here**: define types just once, then talk about
-encoding them for slots and fields
+**TODO convenience support for bit maps, flags**
+
+## Fixed-width integers {#integers}
+
+- `uint8`, `uint16`, `uint32`, `uint64`: unsigned integers of the
+  given bit width
+- `int8`, `int16`, `int32`, `int64`: signed integers of the given bit
+  width
+
+
+## Floating point numbers {#floats}
+
+- `float32`: IEEE-754 32-bit floating-point numbers
+- `float64`: IEEE-754 64-bit floating-point numbers
+
+
+## Array types {#array-types}
+
+- `[n]T`: a fixed-size array of `n` items of type `T`
+- `[]T` for a variable-size array of items of type `T`
+
+Where `T` is any type that is valid in that context.
+
+
+## Aliases {#alias-types}
+
+- `byte`: like `uint8`, but with a semantic hint that it's not used as
+  a number
+- `string`: like `[]byte`, but with a semantic hint that it contains
+  human-readable text in UTF-8 encoding
 
 
 # Frames, Envelopes and Messages {#f-e-m}
@@ -119,13 +147,11 @@ to say "this is nanoseconds since unix epoch"**)
 
 We will use the following short hand notation:
 
+- `M`: a placeholder for any message type
 - `S`: a placeholder for any slot type
 - `F`: a placeholder for any field type
-- `M`: a placeholder for any message type
 - `T`: a placeholder for any type that is valid in that context: `S`
   when talking about slots, `F` when talking about fields
-- `[n]T`: a fixed-size array of `n` items of type `T`
-- `[]T` for a variable-size array of items of type `T`
 
 Message schema can specify a minimum alignment for the message.
 
@@ -137,8 +163,8 @@ A Slot contains one of the following data types:
 - `uint8`, `uint16`, `uint32`, `uint64`
 - `int8`, `int16`, `int32`, `int64`
 - `float32`, `float64`
+- `byte`
 - (**TODO convenience support for bit maps, flags**)
-- `byte`: like `uint8`, but with a semantic hint that it's not used as a number
 - `M`: messages that do not contain fields
 - `[n]S`: fixed length arrays of any of these types
 
@@ -164,13 +190,13 @@ A Field contains one the following data types:
 - `uint8`, `uint16`, `uint32`, `uint64`
 - `int8`, `int16`, `int32`, `int64`
 - `float32`, `float64`
-- `byte`: like `uint8`, but with a semantic hint that it's not used as a number
+- `byte`
 - (**TODO convenience support for bit maps, flags, combinations**)
+- `M`: messages
 - `[n]S`: fixed length arrays of any of fixed-size types
 - `[]S`: variable length arrays of fixed-size types
 - `string`: like `[]byte`, but with a semantic hint that it contains
   human-readable text in UTF-8 encoding
-- `M`: messages
 
 Single-byte integers, floats, fixed length arrays, messages that do
 not contain fields, and fixed length arrays of fixed length types are

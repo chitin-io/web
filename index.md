@@ -39,7 +39,7 @@ https://github.com/chitin-io/web
 chitin v1
 
 envelope Bar {
-	map {
+	messages {
 		1: Person v1
 	}
 }

@@ -38,7 +38,7 @@ https://github.com/chitin-io/web
 ```chitin
 chitin v1
 
-envelope bar {
+envelope Bar {
 	map {
 		1: Person v1
 	}

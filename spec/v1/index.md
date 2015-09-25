@@ -57,6 +57,78 @@ Where `T` is any type that is valid in that context.
   human-readable text in UTF-8 encoding
 
 
+# Length-prefixed encoding {#length-prefixed-encoding}
+
+This section describes an encoding for sequences of variable-length
+items.
+
+In its basic form, the encoding simply alternates `varuint` lengths
+with the full content of one item.
+
+Length 0 is reserved for use as padding (see [Alignment](#alignment)).
+Encoded length is content length + 1.
+
+> *Example*: an encoding of two variable-length messages with contents
+> `x` and `foo`:
+>
+> offset | 0 | 1 | 2 | 3 | 4 | 5
+> -------|---|---|---|---|---|---
+> value  | 2 |"x"| 4 |"f"|"o"|"o"
+
+> *Example*: an encoding of a variable-length message with a content of
+>  the letter `x` repeated 1000 times:
+>
+> offset | 0 | 1 | 2 | 3 | … | 1001
+> -------|---|---|---|---|---|-----
+> value  |243|249|"x"|"x"| … |"x"
+
+
+## Alignment {#alignment}
+
+The content may have alignment requirements. In the simple case,
+alignment is implemented by adding 0 bytes before the length and
+content bytes:
+
+When decoding, the 0 lengths are skipped.
+
+> *Example*: an encoding of a variable-length message with contents
+> `foo`, where the content is aligned to a 4-byte boundary:
+>
+> offset | 0 | 1 | 2 | 3 | 4 | 5 | 6
+> -------|---|---|---|---|---|---|---
+> value  | 0 | 0 | 0 | 4 |"f"|"o"|"o"
+
+The number of padding bytes depends on the encoded byte count of the
+`varuint` length.
+
+> *Example*: an encoding of a variable-length message with a content of
+>  the letter `x` repeated 1000 times, where the content is aligned to a
+>  4-byte boundary:
+>
+> offset | 0 | 1 | 2 | 3 | 4 | 5 | … | 1003
+> -------|---|---|---|---|---|---|---|-----
+> value  | 0 | 0 |243|249|"x"|"x"| … |"x"
+
+Padding SHOULD be inserted at the last possible location.
+
+> *Example*: an encoding of two variable-length messages with contents
+> `x` and `foo`, where `foo` is aligned to a 4-byte boundary:
+>
+> offset | 0 | 1 | 2 | 3 | 4 | 5 | 6
+> -------|---|---|---|---|---|---|---
+> value  | 2 |"x"| 0 | 4 |"f"|"o"|"o"
+
+With nested data structures, alignment may be required for a byte that
+is not the first byte of content.
+
+> *Example*: an encoding of a variable-length message with contents
+> `xAbc`, where the byte `A` is aligned to a 4-byte boundary:
+>
+> offset | 0 | 1 | 2 | 3 | 4 | 5 | 6
+> -------|---|---|---|---|---|---|---
+> value  | 0 | 0 | 5 |"x"|"A"|"b"|"c"
+
+
 # Frames, Envelopes and Messages {#f-e-m}
 
 <img src="layout.svg"

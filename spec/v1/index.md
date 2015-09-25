@@ -98,13 +98,14 @@ has already been consumed, this may not match with any file offsets.
 Libraries allocating buffers MUST either align buffers appropriately,
 or state they do not support alignment.
 
-In the simple case, alignment is implemented by adding 0 bytes after
-the length.
+In the simple case, alignment is implemented by one or more null bytes
+(value `0`) after the length.
 
 When decoding, the 0 lengths are skipped.
 
 > *Note*: this only works because the decoder also knows the alignment
-> requirements. Otherwise, the 0 bytes would be confused for content.
+> requirements. Otherwise, the padding bytes would be confused for
+> content.
 
 > *Example*: an encoding of a variable-length message with contents
 > `foo`, where the content is aligned to a 4-byte boundary:
@@ -171,7 +172,7 @@ lengths as needed.
 To minimize the overhead from padding, we can use the padding bytes to
 encode upcoming item lengths.
 
-Instead of padding with 0 bytes, encoder MAY use bytes from the
+Instead of padding with null bytes, encoder MAY use bytes from the
 lengths of the items sequentially after the current item. Decoders
 MUST support this.
 
@@ -194,7 +195,7 @@ an items content.
 > -------|---|---|---|---|---|---|---|---|---|---|---|-----
 > value  | 2 |"x"| 4 |243|"f"|"o"|"o"|249|"y"|"y"| … |"y"
 
-0 byte padding MUST NOT be inserted in the middle of a
+Null byte padding MUST NOT be inserted in the middle of a
 `varuint`-encoded length.
 
 

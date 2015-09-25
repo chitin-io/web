@@ -153,6 +153,38 @@ lengths as needed.
 > value  | 4 |"f"|"o"|"o"|"b"|"a"|"r"| 0 |"x"| 5 |"q"|"u"|"u"|"x"
 
 
+## Padding optimization {#padding-optimization}
+
+To minimize the overhead from padding, we can use the padding bytes to
+encode upcoming item lengths.
+
+Instead of padding with 0 bytes, encoder MAY use bytes from the
+lengths of the items sequentially after the current item. Decoders
+MUST support this.
+
+> *Example*: an encoding of three variable-length messages with
+> contents `x`, `foo` and `y`, where `foo` is aligned to a 4-byte
+> boundary:
+>
+> offset | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7
+> -------|---|---|---|---|---|---|---|---
+> value  | 2 |"x"| 4 | 2 |"f"|"o"|"o"|"y"
+
+The bytes of a `varuint`-encoded length MAY be split on two sides of
+an items content.
+
+> *Example*: an encoding of three variable-length messages with
+> contents `x`, `foo` and the letter `y` repeated 1000 times, where
+> `foo` is aligned to a 4-byte boundary:
+>
+> offset | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | … | 1007
+> -------|---|---|---|---|---|---|---|---|---|---|---|-----
+> value  | 2 |"x"| 4 |243|"f"|"o"|"o"|249|"y"|"y"| … |"y"
+
+0 byte padding MUST NOT be inserted in the middle of a
+`varuint`-encoded length.
+
+
 # Frames, Envelopes and Messages {#f-e-m}
 
 <img src="layout.svg"

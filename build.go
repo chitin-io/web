@@ -153,12 +153,18 @@ func markdown(path string, info os.FileInfo) error {
 	title := childText(nodes[0])
 
 	var buf bytes.Buffer
+	prettyPath := "/" + strings.TrimSuffix(path, ".md")
+	if dir, file := filepath.Split(prettyPath); file == "index" {
+		prettyPath = dir
+	}
 	data := struct {
+		Path    string
 		Title   string
 		H1      template.HTML
 		TOC     template.HTML
 		Content template.HTML
 	}{
+		Path:    prettyPath,
 		Title:   title,
 		H1:      template.HTML(titleHTML),
 		TOC:     template.HTML(tocHTML),

@@ -129,6 +129,30 @@ is not the first byte of content.
 > value  | 0 | 0 | 5 |"x"|"A"|"b"|"c"
 
 
+## Interleaving fixed length items {#interleaving-fixed-length-items}
+
+Fixed length items may be interleaved with length-prefixed items. This
+is only possible when the decoder will know to expect this.
+
+> *Example*: an encoding of a variable-length message `foo`,
+> fixed-length message `x`, and a variable-length message `quux`:
+>
+> offset | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
+> -------|---|---|---|---|---|---|---|---|---|---
+> value  | 4 |"f"|"o"|"o"|"x"| 5 |"q"|"u"|"u"|"x"
+
+Alignment of fixed length items works as above, by inserting 0
+lengths as needed.
+
+> *Example*: an encoding of a variable-length message `foobar`,
+> fixed-length message `x` aligned at a 4-byte boundary, and a
+> variable-length message `quux`:
+>
+> offset | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10| 11| 12| 13
+> -------|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+> value  | 4 |"f"|"o"|"o"|"b"|"a"|"r"| 0 |"x"| 5 |"q"|"u"|"u"|"x"
+
+
 # Frames, Envelopes and Messages {#f-e-m}
 
 <img src="layout.svg"

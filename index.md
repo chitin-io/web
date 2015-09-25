@@ -40,11 +40,11 @@ chitin v1
 
 envelope bar {
 	map {
-		1: person v1
+		1: Person v1
 	}
 }
 
-message person v1 {
+message Person v1 {
 	wire format: v1
 	options {
 		align: 4

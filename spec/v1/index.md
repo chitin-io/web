@@ -43,8 +43,8 @@ and then encoded as [`varuint`](#varuint).
 
 ## Array types {#array-types}
 
-- `[n]T`: a fixed-size array of `n` items of type `T`
-- `[]T`: a variable-size array of items of type `T`
+- `[n]T`: a fixed-length array of `n` items of type `T`
+- `[]T`: a variable-length array of items of type `T`
 
 Where `T` is any type that is valid in that context.
 
@@ -209,7 +209,7 @@ Null byte padding MUST NOT be inserted in the middle of a
 socket, HTTP request body, etc) into messages, we *frame* the data. A
 frame is simply a length prefix. The prefix is encoded as
 [varuint](#varuint), typically as a single byte. Frames are not
-interleaved. When the size is implied by the container (for example,
+interleaved. When the length is implied by the container (for example,
 key-value store value as a whole), a frame is not needed.
 
 **Envelopes**: When we may see multiple different kinds of messages
@@ -226,12 +226,12 @@ Programs using Chitin can use each layer directly, based on their
 requirements. The layers are independent: a stream of Messages of the
 same type can be sent with just Frames, without Envelopes.
 
-Every Message does know its size, but only after reading its Fields,
-whereas a Frame knows its size up front. If messages are consumed
+Every Message does know its length, but only after reading its Fields,
+whereas a Frame knows its length up front. If messages are consumed
 fully and sequentially, Frames may be unnecessary. Similarly, when
 consuming data fully, if unknown Messages in an Envelope are a fatal
 error, sequences of Envelopes do not necessarily need Frames.
-Recommendation: If the data size is unknown (a stream), always use
+Recommendation: If the data length is unknown (a stream), always use
 Frames, but write Chitin encoding/decoding libraries without such
 assumptions.
 
@@ -245,11 +245,11 @@ A Frame is encoded as
 
 Length 0 means skip this frame silently, and is used for alignment.
 
-Libraries MUST allow applications to constrain maximum frame size.
+Libraries MUST allow applications to constrain maximum frame length.
 
 The data type of the length is explicitly not specified as any fixed
 size integer. Implementations can pick a size based on what is their
-supported maximum frame size. Requirement to send or receive frames
+supported maximum frame length. Requirement to send or receive frames
 greater than 4GB SHOULD be explicitly stated in any protocol
 documentation if assumed, and not all implementations will be able to
 do so. Library implementors SHOULD NOT choose a size smaller than
@@ -267,14 +267,14 @@ Kind 0 means skip this envelope silently, and is used for alignment.
 
 As with Frames, the data type of kind is explicitly not specified.
 Implementations may look at the schema for the envelope and choose a
-suitable size for the maximum number present. Implementations MUST
-gracefully handle input greater than the chosen size.
+suitable integer size for the maximum number present. Implementations
+MUST gracefully handle input greater than the chosen size.
 
 
 # Message wire format v1 {#message-wire-v1}
 
-A *Message* is a sequence of fixed-size *Slots* followed by a sequence
-of variable-size *Fields*. Fields use
+A *Message* is a sequence of fixed-length *Slots* followed by a
+sequence of variable-length *Fields*. Fields use
 [Length-prefixed encoding](#length-prefixed-encoding) specified
 earlier.
 
@@ -349,8 +349,8 @@ A Field contains one the following data types:
 - `byte`
 - (**TODO convenience support for bit maps, flags, combinations**)
 - `M`: messages
-- `[n]S`: fixed length arrays of any of fixed-size types
-- `[]S`: variable length arrays of fixed-size types
+- `[n]S`: fixed length arrays of any of fixed-length types
+- `[]S`: variable length arrays of fixed-length types
 - `string`: like `[]byte`, but with a semantic hint that it contains
   human-readable text in UTF-8 encoding
 
@@ -366,16 +366,16 @@ Multi-byte integers are encoded as [`varuint`](#varuint) or
 
 Note that arrays of arrays are supported.
 
-Arrays with variable-size items can be stored by storing *Framed*
+Arrays with variable-length items can be stored by storing *Framed*
 messages. In that case, constant-time lookup by index is not
 supported.
 
-Maps (aka dictionaries) of fixed-size keys and values can be stored as
-an array of messages, with the message having slots for key and value.
-Constant-time lookup by key is not supported, only by index.
+Maps (aka dictionaries) of fixed-length keys and values can be stored
+as an array of messages, with the message having slots for key and
+value. Constant-time lookup by key is not supported, only by index.
 
-Maps of variable-size items can be stored similarly using the above
-method for storing arrays of variable-size items.
+Maps of variable-length items can be stored similarly using the above
+method for storing arrays of variable-length items.
 
 Message schema can specify a minimum alignment for a field.
 

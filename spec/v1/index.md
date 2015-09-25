@@ -85,8 +85,21 @@ Encoded length is content length + 1.
 
 ## Alignment {#alignment}
 
-The content may have alignment requirements. In the simple case,
-alignment is implemented by adding 0 bytes after the length.
+The content may have alignment requirements. This allows for efficient
+processing of the data, e.g. avoiding alignment faults and enabling
+special instructions to be used.
+
+When decoding a buffer, alignment can only be guaranteed if the buffer
+is aligned according to the largest alignment guarantee that can be
+contained in the buffer. When decoding a stream, the byte position
+where reading starts is interpreted as offset 0; if part of the stream
+has already been consumed, this may not match with any file offsets.
+
+Libraries allocating buffers MUST either align buffers appropriately,
+or state they do not support alignment.
+
+In the simple case, alignment is implemented by adding 0 bytes after
+the length.
 
 When decoding, the 0 lengths are skipped.
 
@@ -259,9 +272,10 @@ gracefully handle input greater than the chosen size.
 
 # Message wire format v1 {#message-wire-v1}
 
-A *Message* is a sequence of fixed-size *Slots*, a sequence of
-variable-size *Fields*, and a sequence of the respective field
-lengths.
+A *Message* is a sequence of fixed-size *Slots* followed by a sequence
+of variable-size *Fields*. Fields use
+[Length-prefixed encoding](#length-prefixed-encoding) specified
+earlier.
 
 Slots and fields of a message are explicitly described by the
 versioned message definition in the schema. All slots and fields are
@@ -282,6 +296,19 @@ We will use the following short hand notation:
   when talking about slots, `F` when talking about fields
 
 Message schema can specify a minimum alignment for the message.
+
+Messages with no Envelope or Frame around them are correctly aligned
+by relying of aligned buffer allocation (see [Alignment](#alignment)).
+
+Messages in Frames, either with or without Envelopes, are aligned by
+prefixing 0-length Frames as appropriate. Note that the encoding of
+the intermediate Envelope affects the amount of padding required.
+
+Messages in Envelopes, without Frames, are aligned by prefixing
+Envelopes with kind 0.
+
+(Pragmatically, with and without Frames, the data is zero-prefixed,
+but a Frame can only contain one Envelope or Message.)
 
 
 ## Slot {#slot}
@@ -350,56 +377,6 @@ Maps of variable-size items can be stored similarly using the above
 method for storing arrays of variable-size items.
 
 Message schema can specify a minimum alignment for a field.
-
-
-## Storing field lengths {#field-len}
-
-The length of a field always precedes the field content, but length
-chunks and fields are interleaved to serve both streaming generation
-and streaming consumption use cases, and to make use of the space
-otherwise wasted as padding for alignment.
-
-If a field length takes more than one byte to encode, the encoded
-length may span multiple chunks. The field length will be always fully
-transmitted before the field content begins; as a corner case,
-multiple field length chunks may be sent back to back.
-
-*(The constants in the following may need to be adjusted while this
-spec is still a draft. Every mention of a constant in the spec must
-specify a name for the constant.)*
-
-Field lengths are encoded in chunks. Each chunk is up to 4 bytes
-(constant `MaxChunkLen`) long.
-
-
-## Alignment {#alignment}
-
-Schema can specify a minimum alignment for a message, and fields of a
-message. This allows for efficient processing of the data, e.g.
-avoiding alignment faults and enabling special instructions to be
-used.
-
-When decoding a buffer, alignment can only be guaranteed if the buffer
-is aligned according to the largest alignment guarantee that can be
-contained in the buffer. When decoding a stream, the byte position
-where reading starts is interpreted as offset 0; if part of the stream
-has already been consumed, this may not match with any file offsets.
-
-Libraries allocating buffers MUST either align buffers appropriately,
-or state they do not support alignment.
-
-Messages with no Envelope or Frame around them are correctly aligned
-by the above.
-
-Messages in Frames, either with or without Envelopes, are aligned by
-prefixing 0-length Frames as appropriate. Note that the encoding of
-the intermediate Envelope affects the amount of padding required.
-
-Messages in Envelopes, without Frames, are aligned by prefixing
-Envelopes with kind 0.
-
-(Pragmatically, with and without Frames, the data is zero-prefixed,
-but a Frame can only contain one Envelope or Message.)
 
 
 # Schema {#schema}

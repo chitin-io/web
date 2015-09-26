@@ -339,37 +339,37 @@ named `_`.
 
 ## Field {#field}
 
-A Field contains one the following data types:
+Fields can be by their very nature variable length. There are three
+cases of how the field length is known, which may combine in any
+order, and are collectively encoded as specified in
+[Interleaving fixed length items](#interleaving-fixed-length-items).
 
-- `uint8`, `uint16`, `uint32`, `uint64`
-- `int8`, `int16`, `int32`, `int64`
-- `float32`, `float64`
+Message schema can specify a minimum alignment for a field.
+
+
+### Fixed length fields
+
+- `uint8`
+- `int8`
 - `byte`
 - (**TODO convenience support for bit maps, flags, combinations**)
-- `M`: messages
-- `[n]S`: fixed length arrays of any of fixed-length types
-- `[]S`: variable length arrays of fixed-length types
-- `string`: like `[]byte`, but with a semantic hint that it contains
-  human-readable text in UTF-8 encoding
+- `M`: messages that do not contain fields
+- `[n]S`: fixed length arrays of fixed-length types
 
-Fields can be by their very nature variable length. There are three cases:
+These are encoded as in slots. They do not encode a length prefix.
+They are supported in fields mostly for completeness; they are
+probably better off put in slots.
 
-**Fixed length fields**: single-byte integers, fixed length arrays,
-messages that do not contain fields. These are encoded as in slots.
-They do not encode a length prefix. They are supported in fields
-mostly for completeness; they are probably better off put in slots.
 
-**Self-delimited fields**: multi-byte integers and floats. Encoded in
-a way that does not need a separate length prefix.
+### Self-delimited fields
 
-**Length-prefixed fields**: messages with fields and variable-length
-arrays (including `string`). These use
-[length-prefixed encoding](#length-prefixed-encoding) specified
-earlier.
+- `uint16`, `uint32`, `uint64`
+- `int16`, `int32`, `int64`
+- `float32`, `float64`
 
-These three cases may interleave in any combination, and are combined
-as specified in
-[Interleaving fixed length items](#interleaving-fixed-length-items).
+Encoded in a way that does not need a separate length prefix. These
+are all short enough that having a separate length prefix would be
+wasteful.
 
 Multi-byte integers are encoded as [`varuint`](#varuint) or
 [`varsint`](#varsint), respectively.
@@ -378,12 +378,24 @@ Floats are converted to integers as per IEEE-754, their bytes are
 reordered so that exponent is in the least significant bits, and
 encoded as `varuint`. This minimizes space used by smaller numbers.
 
-Note that arrays of arrays are supported, but inner arrays must be
-fixed length.
+
+### Length-prefixed fields
+
+- `M`: messages that contain fields
+- `[]S`: variable length arrays of fixed-length types
+- `string`
+
+These use [length-prefixed encoding](#length-prefixed-encoding) as
+specified earlier.
+
+
+### Encoding more complex types
+
+Arrays of arrays are supported, but inner arrays must be fixed length.
 
 Arrays with variable-length items can be stored by storing *Framed*
-messages. In that case, constant-time lookup by index is not
-supported.
+messages in a `[]byte`. In that case, constant-time lookup by index is
+not supported.
 
 Maps (aka dictionaries) of fixed-length keys and values can be stored
 as an array of messages, with the message having slots for key and
@@ -391,8 +403,6 @@ value. Constant-time lookup by key is not supported, only by index.
 
 Maps of variable-length items can be stored similarly using the above
 method for storing arrays of variable-length items.
-
-Message schema can specify a minimum alignment for a field.
 
 
 # Schema {#schema}

@@ -218,7 +218,7 @@ socket, HTTP request body, etc) into messages, we *frame* the data. A
 frame is simply a length prefix. The prefix is encoded as
 [varuint](#varuint), typically as a single byte. Frames are not
 interleaved. When the length is implied by the container (for example,
-key-value store value as a whole), a frame is not needed.
+key-value store value as a whole), using frames is not necessary.
 
 **Envelopes**: When we may see multiple different kinds of messages
 (and different versions of how a message may be laid out also count as

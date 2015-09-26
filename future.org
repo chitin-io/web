@@ -1,8 +1,3 @@
-* repurpose field length chunking for sequential Frames and Envelopes too :spec:v1:
-- safe 0 padding means this is opt-in
-- can we explain sequence of frames as a message with no slots
-- CANNOT interpret envelope as a message with two fields: uintX and
-  []byte; that would include the length of the inner message
 * [#A] more semantic types					    :spec:v1:
 - Can we piggyback on JSON-LD/JSON Schema IRIs to write down semantics
   of fields? http://www.w3.org/TR/json-ld/#the-context

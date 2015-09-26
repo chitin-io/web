@@ -246,12 +246,8 @@ assumptions.
 
 # Frame {#frame}
 
-A Frame is encoded as
-
-- `varuint`: length of content
-- `[n]byte`: content
-
-Length 0 means skip this frame silently, and is used for alignment.
+Sequential frames are encoded as
+[length-prefixed encoding](#length-prefixed-encoding).
 
 Libraries MUST allow applications to constrain maximum frame length.
 

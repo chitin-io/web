@@ -376,7 +376,8 @@ Multi-byte integers are encoded as [`varuint`](#varuint) or
 
 Floats are converted to integers as per IEEE-754, their bytes are
 reordered so that exponent is in the least significant bits, and
-encoded as `varuint`. This minimizes space used by smaller numbers.
+encoded as `varuint`. This minimizes space used by smaller
+numbers.[^varfloat]
 
 
 ### Length-prefixed fields
@@ -514,3 +515,15 @@ application by a library. This is so that it's always safe to
 
 And so on. If applications were to see the pure padding entries, their
 behavior might change, even from just timing differences.
+
+
+<!-- Footnotes
+
+blackfriday adds a horizontal ruler above the footnotes.
+
+blackfriday is finicky about footnotes contents, do not word wrap the
+following lines.
+
+-->
+
+[^varfloat]: This idea came from "Floats are converted to IEEE754, byte reversed, then uvarint encoded." in https://github.com/sbunce/gosu

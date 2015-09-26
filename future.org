@@ -19,8 +19,6 @@
 * better split the spec into normative and non-normative?	       :spec:
 - push things like arrays of variable size items into a "conventions"
   section
-* expandability without bumping version number 			       :spec:
-- can add fields to the end?
 * clearer optional features for library implementations
 * [#B] website: write a boltdb example
 * [#B] chitin schema file formatter				      :tools:

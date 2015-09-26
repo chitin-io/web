@@ -443,9 +443,61 @@ property Protocol Buffers authors have said they would use, except for
 legacy reasons.
 
 
-## Interleaved field length chunks and contents
+## Interleaved field lengths and contents
 
-TODO
+The [length-prefixed encoding](#length-prefixed-encoding) interleaves
+lengths and contents, because it seems like the best trade-off.
+
+Other length-first formats have experienced pains from this decision
+too, e.g. there's been talk of a Protocol Buffers encoding
+optimization where the outgoing message byte buffer is constructed
+back-to-front, so the field sizes are more naturally known at the time
+they need to be encoded.
+
+Let's look at the alternatives.
+
+If *all* lengths were up *front*:
+
+- Assuming `varuint` encoding for lengths, we wouldn't know where to
+  start writing the content of the first field until we know how we'll
+  encode all of the lengths. (Fixed-size lengths would mitigate this,
+  but be wasteful in other ways.)
+- We'd need to compute sizes for potentially large, potentially
+  on-demand generated contents -- and then remember the contents, for
+  later use.
+- We could not start streaming the first field until after we'd
+  computed sizes for all fields.
+- The same mechanism would not serve us for Frames, where future frame
+  lengths may depend on user input etc.
+
+If *all* lengths were at the *back*:
+
+- We wouldn't know where to write them until we'd know the sizes of
+  all of the fields. This is less of a problem than above, as we could
+  buffer the relatively small field sizes elsewhere.
+- We could not start processing any of the streamed fields until after
+  we'd received them all, to see the sizes.
+- The same mechanism would not serve us for Frames, where future frame
+  lengths may depend on user input etc.
+
+Field lengths could be *implicit*:
+
+- Using something like
+  [COBS](https://en.wikipedia.org/wiki/Consistent_Overhead_Byte_Stuffing),
+  every field could be self-terminating.
+- This means we don't need to know the size of a field before we start
+  writing it. That's nice, but decode having to look at every byte of
+  the field is not.
+- For the purposes of the discussion here, this is pretty much
+  equivalent to interleaving lengths and contents.
+
+So, some sort of interleaving seems ideal.
+
+Our desire to support alignment guarantees causes wasteful null
+padding. [Padding optimization](#padding-optimization) minimizes that,
+at the cost of complexity. If that complexity is demonstrated to be a
+significant barrier, we'll remove the optimization.
+
 
 
 ## Null padding is not visible to applications

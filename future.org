@@ -62,10 +62,6 @@ https://en.wikipedia.org/wiki/Exponential-Golomb_coding
 
 - everything more complex than varuint is 10x slower
 - make benchmarks reproducible
-* write rationale for where to put field sizes
-- protobuf can do "back to front" encoding to avoid pre-sizing
-  everything; not desirable when one wants to avoid copies
-- if at the end, reader can't stream
 * write advocacy: no wire overhead for putting a Message in a sized container
 - e.g. in a key-value database
 - that is, no field types etc

@@ -23,6 +23,14 @@ to unsigned integers as per
 and then encoded as [`varuint`](#varuint).
 
 
+## `varfloat` {#varfloat}
+
+Variable-length float encoding. Floats are converted to integers as
+per IEEE-754, their bytes are reordered so that exponent is in the
+least significant bits, and encoded as `varuint`.[^varfloat] This
+minimizes space used by smaller numbers in a way similar to `varuint`.
+
+
 # Types {#types}
 
 **TODO convenience support for bit maps, flags**
@@ -374,10 +382,7 @@ wasteful.
 Multi-byte integers are encoded as [`varuint`](#varuint) or
 [`varsint`](#varsint), respectively.
 
-Floats are converted to integers as per IEEE-754, their bytes are
-reordered so that exponent is in the least significant bits, and
-encoded as `varuint`. This minimizes space used by smaller
-numbers.[^varfloat]
+Floats are encoded as [`varfloat`](#varfloat).
 
 
 ### Length-prefixed fields

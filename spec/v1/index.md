@@ -215,7 +215,7 @@ Null byte padding MUST NOT be inserted in the middle of a
 
 **Frames**: To split a stream (for example data read from a TCP
 socket, HTTP request body, etc) into messages, we *frame* the data. A
-frame is simply a length prefix. The prefix is encoded as
+frame is simply a length prefix. The length is encoded as
 [varuint](#varuint), typically as a single byte. Frames are not
 interleaved. When the length is implied by the container (for example,
 key-value store value as a whole), using frames is not necessary.

@@ -62,9 +62,6 @@ https://en.wikipedia.org/wiki/Exponential-Golomb_coding
 
 - everything more complex than varuint is 10x slower
 - make benchmarks reproducible
-* write rationale: 0-length frames & 0-kind envelopes are *ignored*
-- never passed to application code
-- this makes concatenating multiple Framed streams safe
 * write rationale for where to put field sizes
 - protobuf can do "back to front" encoding to avoid pre-sizing
   everything; not desirable when one wants to avoid copies

@@ -446,3 +446,19 @@ legacy reasons.
 ## Interleaved field length chunks and contents
 
 TODO
+
+
+## Null padding is not visible to applications
+
+0-length Frames and 0-kind Envelopes are never exposed to the
+application by a library. This is so that it's always safe to
+
+- insert null padding into Framed connections to avoid idle disconnections
+- choose whether to do [padding optimization](#padding-optimization)
+  based on whether the size of the next field has already been
+  computer or not
+- to concatenate two Framed streams, using the padding to guarantee
+  alignments in the second stream
+
+And so on. If applications were to see the pure padding entries, their
+behavior might change, even from just timing differences.

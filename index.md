@@ -48,8 +48,6 @@ message Person v1 {
 	wire format: v1
 	options {
 		align: 4
-		# switches field lengths from varuint to exponential golomb coding
-		field length encoding: exp-golomb
 	}
 
 	slots {

@@ -172,7 +172,7 @@ lengths as needed.
 >
 > offset | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10| 11| 12| 13
 > -------|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-> value  | 4 |"f"|"o"|"o"|"b"|"a"|"r"| 0 |"x"| 5 |"q"|"u"|"u"|"x"
+> value  | 7 |"f"|"o"|"o"|"b"|"a"|"r"| 0 |"x"| 5 |"q"|"u"|"u"|"x"
 
 
 ## Padding optimization {#padding-optimization}
